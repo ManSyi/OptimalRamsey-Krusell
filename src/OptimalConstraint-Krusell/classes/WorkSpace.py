@@ -1,0 +1,36 @@
+import numpy as np
+from .Calibration import Calibration
+
+class WorkSpace(Calibration):
+    def __init__(self):
+        Calibration.__init__(self)
+        self.a = np.zeros((self.Nt,self.Nj, self.Nk))
+        self.z = np.zeros((self.Nt, self.Nj))
+        self.A = np.zeros((self.Nt, self.Nk))
+        self.xi = np.zeros((self.Nt, self.Nj, self.Nk))
+        self.z_drift = np.zeros(self.Nj)
+        self.A_drift = np.zeros(self.Nk)
+        self.xi_z = np.zeros((self.Nj, self.Nk))
+        self.xi_A = np.zeros((self.Nj, self.Nk))
+        self.xi_a = np.zeros((self.Nj, self.Nk))
+        self.c = np.zeros((self.Nj, self.Nk))
+        self.cF = np.zeros((self.Nj, self.Nk))
+        self.cB = np.zeros((self.Nj, self.Nk))
+        self.c0 = np.zeros((self.Nj, self.Nk))
+        self.sF = np.zeros((self.Nj, self.Nk))
+        self.sB = np.zeros((self.Nj, self.Nk))
+        self.xiF = np.zeros((self.Nj, self.Nk))
+        self.xiB = np.zeros((self.Nj, self.Nk))
+        self.indF = np.zeros((self.Nj, self.Nk))
+        self.indB = np.zeros((self.Nj, self.Nk))
+        self.ind0 = np.zeros((self.Nj, self.Nk))
+        self.K = np.zeros(self.Nk)
+        self.Y = np.zeros(self.Nk)
+        self.r = np.zeros(self.Nk)
+        self.w = np.zeros(self.Nk)
+        self.Lambda = np.zeros(self.Nk)
+    def initial_start(self, cal, xi_fun):
+        self.a[0, :, :] = np.tile(np.random.uniform(cal.a0_low, cal.a0_high / 3, size=(cal.Nj, 1)), cal.Nk)
+        self.z[0, :] = np.random.uniform(cal.z0_low, cal.z0_high, size=(cal.Nj, 1))
+        self.A[0, :] = np.random.uniform(cal.A0_low, cal.A0_high, size=(cal.Nk, 1))
+        self.xi[0,:,:] = xi_fun(self.z[0, :], self.a[0, :, :], self.a[0, :, :], self.A[0, :])

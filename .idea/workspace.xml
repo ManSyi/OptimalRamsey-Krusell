@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/OptimalRamsey-Krusell.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/Calibration.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/Simulation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/WorkSpace.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/construct_loss.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/utilities/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/utilities/finite_difference.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/utilities/model_funs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/run_code.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test2.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="31rdJ8len8L6krDjEvdJw2MV8F7" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.simulation.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.test2.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\pycharm\Optimal\OptimalRamsey-Krusell\src" />
+      <recent name="E:\pycharm\Optimal\OptimalRamsey-Krusell\src\OptimalConstraint-Krusell\utilities" />
+      <recent name="E:\pycharm\Optimal\OptimalRamsey-Krusell\src\OptimalConstraint-Krusell\classes" />
+      <recent name="E:\pycharm\Optimal\OptimalRamsey-Krusell\src\OptimalRamsey-Krusell" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-e0ed3721d81e-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.25410.159" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="" />
+      <created>1756286050952</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1756286050952</updated>
+    </task>
+    <servers />
+  </component>
+</project>
