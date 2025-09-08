@@ -18,7 +18,7 @@ if torch.cuda.is_available():
 
 
 # 1. 创建示例数据集 (在实际应用中，您会加载自己的数据)
-def create_sample_data(n_samples=1000):
+def create_sample_data(n_samples=10000):
     x = torch.randn(n_samples, 1)  # 输入特征
     y = 2.5 * x ** 3 + x ** 2 + 1.2 * x -0.56 # 线性关系加上噪声
     return x, y
@@ -38,7 +38,7 @@ x_train, x_test = torch.split(x_data, [train_size, test_size])
 y_train, y_test = torch.split(y_data, [train_size, test_size])
 
 # 创建DataLoader以便批量处理
-batch_size = 32
+batch_size = 64
 train_dataset = TensorDataset(x_train, y_train)
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 

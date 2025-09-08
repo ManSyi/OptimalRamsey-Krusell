@@ -8,7 +8,7 @@ class Simulation(Calibration):
     z0 = 0
     a0 = 0
     def __init__(self):
-        Calibration.__init__(self)
+        super().__init__(self)
         self.dWj = np.zeros((self.Nt, self.Nj))
         self.dWk = np.zeros((self.Nt, self.Nk))
         x_k = np.zeros((self.Nt, self.Nk))

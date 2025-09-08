@@ -1,6 +1,8 @@
 import numpy as np
 from ..classes import Calibration, Simulation, WorkSpace
 from ..utilities import *
+import torch
+import torch.nn as nn
 
 def simulate(cal, inputs, ws, xi_fun):
     for t in range(cal.Nt):
@@ -20,5 +22,11 @@ def simulate(cal, inputs, ws, xi_fun):
 
         upwind(cal,ws, t, xi_fun)
 
-def loss(cal, ws,xi_fun):
-    return np.linalg.norm(ws.xi[1:,:,:] - xi_fun(ws.z[1:,:], ws.a[1:,:,:], ws.a[1:,:,:], ws.A[1:,:])) / (cal.Nj * cal.Nk * (cal.Nt-1))
+
+class LossFunction(nn.Module):
+    def __init__(self):
+        super().__init__()
+    def forward(self,xi_fun, cal:Calibration, ws:WorkSpace):
+        return torch.from_numpy(np.linalg.norm(
+            ws.xi[1:, :, :] - xi_fun(ws.model, ws.z[1:, :], ws.a[1:, :, :], ws.a[1:, :, :], ws.A[1:, :])) / (
+                    cal.Nj * cal.Nk * (cal.Nt - 1)))
