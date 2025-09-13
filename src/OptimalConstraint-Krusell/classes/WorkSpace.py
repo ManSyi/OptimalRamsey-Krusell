@@ -1,38 +1,49 @@
 import numpy as np
 from .Calibration import Calibration
+from .Simulation import Simulation
 from ..learning import NeuralNetwork
+import torch
 
 class WorkSpace(Calibration):
-    def __init__(self, model: NeuralNetwork):
+    def __init__(self, model: NeuralNetwork, num_sample_z, num_sample_A):
         super().__init__(self)
-        self.a = np.zeros((self.Nt,self.Nj, self.Nk))
-        self.z = np.zeros((self.Nt, self.Nj))
-        self.A = np.zeros((self.Nt, self.Nk))
-        self.xi = np.zeros((self.Nt, self.Nj, self.Nk))
-        self.z_drift = np.zeros(self.Nj)
-        self.A_drift = np.zeros(self.Nk)
-        self.xi_z = np.zeros((self.Nj, self.Nk))
-        self.xi_A = np.zeros((self.Nj, self.Nk))
-        self.xi_a = np.zeros((self.Nj, self.Nk))
-        self.c = np.zeros((self.Nj, self.Nk))
-        self.cF = np.zeros((self.Nj, self.Nk))
-        self.cB = np.zeros((self.Nj, self.Nk))
-        self.c0 = np.zeros((self.Nj, self.Nk))
-        self.sF = np.zeros((self.Nj, self.Nk))
-        self.sB = np.zeros((self.Nj, self.Nk))
-        self.xiF = np.zeros((self.Nj, self.Nk))
-        self.xiB = np.zeros((self.Nj, self.Nk))
-        self.indF = np.zeros((self.Nj, self.Nk))
-        self.indB = np.zeros((self.Nj, self.Nk))
-        self.ind0 = np.zeros((self.Nj, self.Nk))
-        self.K = np.zeros(self.Nk)
-        self.Y = np.zeros(self.Nk)
-        self.r = np.zeros(self.Nk)
-        self.w = np.zeros(self.Nk)
-        self.Lambda = np.zeros(self.Nk)
+        self.a = torch.zeros((num_sample_z, num_sample_A))
+        self.xi = torch.zeros((num_sample_z, num_sample_A))
+
+        self.xi_z = torch.zeros((num_sample_z, num_sample_A))
+        self.xi_A = torch.zeros((num_sample_z, num_sample_A))
+        self.xi_a = torch.zeros((num_sample_z, num_sample_A))
+        self.c =  torch.zeros((num_sample_z, num_sample_A))
+        self.cF =  torch.zeros((num_sample_z, num_sample_A))
+        self.cB =  torch.zeros((num_sample_z, num_sample_A))
+        self.c0 =  torch.zeros((num_sample_z, num_sample_A))
+        self.sF =  torch.zeros((num_sample_z, num_sample_A))
+        self.sB =  torch.zeros((num_sample_z, num_sample_A))
+        self.xiF =  torch.zeros((num_sample_z, num_sample_A))
+        self.xiB =  torch.zeros((num_sample_z, num_sample_A))
+        self.indF =  torch.zeros((num_sample_z, num_sample_A))
+        self.indB =  torch.zeros((num_sample_z, num_sample_A))
+        self.ind0 =  torch.zeros((num_sample_z, num_sample_A))
+        self.K =  torch.zeros(num_sample_A)
+        self.Y =  torch.zeros(num_sample_A)
+        self.r =  torch.zeros(num_sample_A)
+        self.w =  torch.zeros(num_sample_A)
+        self.Lambda =  torch.zeros(num_sample_A)
+        self.L = 0
+
+
+        self.dWj =  torch.zeros(num_sample_z)
+        self.dWk =  torch.zeros(num_sample_A)
+        self.z =  torch.zeros(num_sample_z)
+        self.A = torch.zeros(num_sample_A)
+        self.z_drift = torch.zeros(num_sample_z)
+        self.A_drift = torch.zeros(num_sample_A)
+
         self.model = model
-    def initial_start(self, cal, xi_fun):
-        self.a[0, :, :] = np.tile(np.random.uniform(cal.a0_low, cal.a0_high / 3, size=(cal.Nj, 1)), cal.Nk)
-        self.z[0, :] = np.random.uniform(cal.z0_low, cal.z0_high, size=(cal.Nj, 1))
-        self.A[0, :] = np.random.uniform(cal.A0_low, cal.A0_high, size=(cal.Nk, 1))
-        self.xi[0,:,:] = xi_fun(self.model, self.z[0, :], self.a[0, :, :], self.a[0, :, :], self.A[0, :])
+
+
+    def initial_start(self, cal:Calibration, sml:Simulation, xi_fun):
+        self.a = sml.a0
+        self.A = sml.A0
+        self.z = sml.z0
+        self.xi = xi_fun(self.model, self.z, self.a, self.a, self.A)

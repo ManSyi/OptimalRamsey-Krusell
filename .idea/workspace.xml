@@ -4,16 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="损失函数">
-      <change afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/train_network.py" afterDir="false" />
+    <list default="true" id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="网络结构">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/Calibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/Calibration.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/Simulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/Simulation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/WorkSpace.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/WorkSpace.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/construct_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/construct_loss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/train_network.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/train_network.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/utilities/finite_difference.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/utilities/finite_difference.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test2.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/utilities/model_funs.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/utilities/model_funs.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,11 +98,20 @@
       <option name="project" value="LOCAL" />
       <updated>1757081531844</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="网络结构">
+      <option name="closed" value="true" />
+      <created>1757322355918</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1757322355918</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="损失函数" />
-    <option name="LAST_COMMIT_MESSAGE" value="损失函数" />
+    <MESSAGE value="网络结构" />
+    <option name="LAST_COMMIT_MESSAGE" value="网络结构" />
   </component>
 </project>

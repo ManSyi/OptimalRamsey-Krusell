@@ -17,6 +17,7 @@ class Calibration:
     Nt = int(T/dt)
     Nj = 10
     Nk = 8
+
     z0_low = 0
     z0_high = 0
     a0_low = 0
