@@ -1,24 +1,24 @@
 import numpy as np
-from .Calibration import Calibration
-from ..learning import NeuralNetwork
+from .calibration import Calibration
 import torch
 
 class Simulation(Calibration):
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
         self.z0 = torch.zeros(self.Nj)
         self.A0 = torch.zeros(self.Nk)
         self.a0 = torch.zeros(self.Nj)
         self.g0 = torch.zeros(self.Nj)
         self.g =  torch.zeros(self.Nj, self.Nk)
-        self.sample_index = torch.zeros(self.Nj * self.Nk, 2)
-        self.sample_index[:,0] = torch.arange(self.Nj).repeat(self.Nk)
-        self.sample_index[:,1] = torch.arange(self.Nk).repeat_interleave(self.Nj, dim=0)
+        self.sample_index = torch.zeros(self.Nj * self.Nk, 2, dtype=torch.int32)
+        self.sample_index[:,0] = torch.arange(self.Nj, dtype=torch.int32).repeat(self.Nk)
+        self.sample_index[:,1] = torch.arange(self.Nk, dtype=torch.int32).repeat_interleave(self.Nj, dim=0)
     @staticmethod
     def toSample_x(z,a,g,A):
         z_dims = len(z.shape)
         A_dims = len(A.shape)
         g_dims = len(g.shape)
+        a_dims = len(a.shape)
 
         if z_dims == 0 and A_dims == 0:
             ng = g.shape[0]  ## z 和 A 均是标量
@@ -49,7 +49,10 @@ class Simulation(Calibration):
             ng = g.shape[0]
             sample_x = torch.zeros((nA * nz, ng + 3))
             sample_x[:, 0] = z.repeat(nA)
-            sample_x[:, 1] = a.T.flatten()
+            if a_dims == 2:
+                sample_x[:, 1] = a.T.flatten()
+            elif a_dims == 1:
+                sample_x[:, 1] = a.repeat(nA)
             if g_dims == 2:
                 sample_x[:, 2:-1] = g.T.repeat_interleave(nz, dim=0)
             elif g_dims == 1:
@@ -64,11 +67,11 @@ class Simulation(Calibration):
     @staticmethod
     def toOutput_y(sample_y, z_dims, A_dims, z,A):
         if z_dims == 0 and A_dims == 0:
-            return sample_y
+            return sample_y.squeeze()
         elif z_dims == 0 and A_dims == 1:
-            return sample_y.T
+            return sample_y.squeeze()
         elif z_dims == 1 and A_dims == 0:
-            return sample_y
+            return sample_y.squeeze()
         elif z_dims == 1 and A_dims == 1:
             nA = A.shape[0]
             nz = z.shape[0]
@@ -82,8 +85,8 @@ class Simulation(Calibration):
         self.a0.uniform_(self.a0_low, self.a0_high / 2)
         self.g0= self.a0
         return self.toSample_x(self.z0,self.a0,self.g0,self.A0)
-    def initial_density(self):
-        self.g = self.g0.repeat(self.Nk, 1).permute(1,0)
+
+
 
 def reshape_fortran(x, shape):
     if len(x.shape) > 0:
