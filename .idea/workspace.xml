@@ -4,19 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="损失函数">
+    <list default="true" id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="正向模拟BSDE">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/Calibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/calibration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/Simulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/simulation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/WorkSpace.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/workspace.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/classes/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/construct_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/construct_loss.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/learning/train_network.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/train_network.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/utilities/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/utilities/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/utilities/finite_difference.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraint-Krusell/utilities/model_funs.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/calibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/calibration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/workspace.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/workspace.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/construct_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/construct_loss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/train_network.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/train_network.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,23 +53,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.Simulation.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.construct_loss.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.finite_difference.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.simulation.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.test2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.train_network.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.workspace.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.Simulation.executor": "Debug",
+    "Python.construct_loss.executor": "Debug",
+    "Python.finite_difference.executor": "Debug",
+    "Python.simulation.executor": "Run",
+    "Python.test.executor": "Debug",
+    "Python.test2.executor": "Run",
+    "Python.train_network.executor": "Debug",
+    "Python.workspace.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\pycharm\Optimal\OptimalRamsey-Krusell\src" />
@@ -124,23 +117,25 @@
       <option name="project" value="LOCAL" />
       <updated>1757733573096</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="正向模拟BSDE">
+      <option name="closed" value="true" />
+      <created>1758766175421</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1758766175421</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="网络结构" />
     <MESSAGE value="损失函数" />
-    <option name="LAST_COMMIT_MESSAGE" value="损失函数" />
+    <MESSAGE value="正向模拟BSDE" />
+    <option name="LAST_COMMIT_MESSAGE" value="正向模拟BSDE" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/test.py</url>
-          <line>89</line>
-          <option name="timeStamp" value="113" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">

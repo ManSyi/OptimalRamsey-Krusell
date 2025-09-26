@@ -27,8 +27,8 @@ class NeuralNetwork(nn.Module):
 
 def xi_fun(model: NeuralNetwork, z,a,g,A):
     with torch.no_grad():
-        output = model(sml.toSample_x(z,a,g,A))
+        output = model(sml.toSample_x(z,a,g,A)).squeeze()
     return sml.toOutput_y(output,len(z.shape), len(A.shape), z,A)
 
 def xi_fun_with_grad(model: NeuralNetwork, z,a,g,A, sample_index):
-    return model(sml.toSample_x(z,a,g,A).index_select(0, sample_index))
+    return model(sml.toSample_x(z,a,g,A).squeeze().index_select(0, sample_index))

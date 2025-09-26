@@ -15,7 +15,7 @@ class Calibration:
     dt = 1
     T = 50
     Nt = int(T/dt)
-    Nj = 100
+    Nj = 80
     Nk = 50
 
     z0_low = 0.2

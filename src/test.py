@@ -14,10 +14,10 @@ from OptimalConstraintKrusell import (Calibration, Simulation, WorkSpace, Neural
 # 检查CUDA是否可用
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-device = torch.device("cpu")
+device = torch.device("cuda")
 print(f"使用设备: {device}")
 
-torch.set_default_device('cpu')
+torch.set_default_device('cuda')
 
 # 设置随机种子以确保可重复性
 torch.manual_seed(42)
@@ -50,10 +50,10 @@ batch_size = cal.batch_size
 train_dataset = TensorDataset(x_train)
 
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True,
-                          generator=torch.Generator(device='cpu'))
+                          generator=torch.Generator(device='cuda'))
 
 test_dataset = TensorDataset(x_test)
-test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, generator=torch.Generator(device='cpu'))
+test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, generator=torch.Generator(device='cuda'))
 
 # 3. 定义损失函数和优化器
 optimizer = optim.Adam(model.parameters(), lr=cal.learning_rate)  # Adam优化器
