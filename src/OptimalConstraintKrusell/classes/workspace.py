@@ -90,7 +90,7 @@ class WorkSpace(Calibration):
         # self.z = self.z_path[:,0]
         # self.z_drift = self.z_drift_path[:, 0]
         # self.A_drift = self.A_drift_path[:, 0]
-        # # self.g = self.a
+        self.g = self.a_path[:,:,0]
         # self.xi = xi_fun(self.model, self.z, self.a,  self.a, self.A)
         #
         # self.dWj = self.dWj_path[:, 0]
@@ -231,6 +231,9 @@ class WorkSpace(Calibration):
         self.xi_infinitesimal_path[:,:,ti] = (-(self.utils(self.c) - self.Lambda.unsqueeze(0) * (self.K.unsqueeze(0) - self.a)) * self.dt
                                       - self.varsigma_z * self.dWj.unsqueeze(1) - self.varsigma * self.dWk.unsqueeze(0))
 
+        # self.xi_infinitesimal_path[:,:,ti] = (-self.Lambda.unsqueeze(0) * self.dt
+        #                               - self.varsigma_z * self.dWj.unsqueeze(1) - self.varsigma * self.dWk.unsqueeze(0))
+
         self.a_path[:,:,ti + 1] = torch.minimum(
             torch.maximum(self.a + (self.sF * self.indF + self.sB * self.indB) * self.dt, torch.tensor(self.a0_low)),
             torch.tensor(self.a0_high))
@@ -247,5 +250,5 @@ class WorkSpace(Calibration):
 
     def simulate_one_step_reverse(self, ti):
         # xi_pre = f(xi_cur)
-        self.xi = (1 / (1 + self.rho * self.dt)
+        self.xi = (1 / (1 + (self.rho + self.deathrate) * self.dt)
                    * (self.xi - self.xi_infinitesimal_path[:,:,ti] ))

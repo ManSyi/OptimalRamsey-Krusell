@@ -5,6 +5,7 @@ class Calibration:
     alpha = 0.36
     delta = 0.08
     delta_diff = 0.1
+    deathrate = 0.005
     rho = 0.04
     theta = 1-0.6
     hat_z = 1.038
