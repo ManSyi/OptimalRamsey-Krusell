@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="正向模拟BSDE">
+    <list default="true" id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="first commit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/calibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/calibration.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/simulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/simulation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/workspace.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/workspace.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/construct_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/construct_loss.py" afterDir="false" />
@@ -137,7 +135,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758876746451</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="first commit">
+      <option name="closed" value="true" />
+      <created>1759386606420</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1759386606420</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -145,7 +151,8 @@
     <MESSAGE value="损失函数" />
     <MESSAGE value="反向模拟BSDE" />
     <MESSAGE value="正向模拟BSDE" />
-    <option name="LAST_COMMIT_MESSAGE" value="正向模拟BSDE" />
+    <MESSAGE value="first commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="first commit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

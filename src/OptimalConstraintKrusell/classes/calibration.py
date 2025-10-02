@@ -22,7 +22,7 @@ class Calibration:
 
     z0_low = 0.2
     z0_high = 1.8
-    a0_low = 0
+    a0_low = 0.01
     a0_high = 1000
     A0_low = 0.2
     A0_high = 1.8

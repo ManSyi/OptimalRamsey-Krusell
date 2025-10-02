@@ -115,12 +115,24 @@ class WorkSpace(Calibration):
         self.risk_loadings()
         self.shadow_price()
 
-        self.xi_infinitesimal_path[:,ti] = (-(self.utils(self.c) - self.Lambda * (self.K - self.a)) * self.dt
-                                      - self.varsigma_z * self.dWj - self.varsigma * self.dWk)
+        # self.xi = ((1 + self.rho  * self.dt) * self.xi - (self.utils(self.c) - self.Lambda * (self.K - self.a) )* self.dt
+        #              - self.varsigma_z * self.dWj - self.varsigma * self.dWk)
+
+        # self.xi_infinitesimal_path[:,ti] = (-(self.utils(self.c) - self.Lambda * (self.K - self.a)) * self.dt
+        #                               - self.varsigma_z * self.dWj - self.varsigma * self.dWk)
+
+        # self.a = torch.minimum(
+        #     torch.maximum(self.a + self.s * self.dt, torch.tensor(self.a0_low)),
+        #     torch.tensor(self.a0_high))
+        #
+        # self.g = torch.minimum(
+        #     torch.maximum(self.g + self.s_other * self.dt, torch.tensor(self.a0_low)),
+        #     torch.tensor(self.a0_high))
+
         self.a_path[:,ti + 1] = torch.minimum(
             torch.maximum(self.a + self.s * self.dt, torch.tensor(self.a0_low)),
             torch.tensor(self.a0_high))
-        
+
         self.g_path[:,:, ti + 1] = torch.minimum(
             torch.maximum(self.g + self.s_other * self.dt, torch.tensor(self.a0_low)),
             torch.tensor(self.a0_high))

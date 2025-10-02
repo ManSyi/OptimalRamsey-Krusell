@@ -5,12 +5,12 @@ from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from OptimalConstraintKrusell import (Calibration, Simulation, WorkSpace, DeepSetsEncoder, initial_value_fun,
-                                      AttentionSetEncoder, ValueNet, IndexedDataset, LossFunction, InitializedModel,
+from OptimalConstraintKrusell import (Calibration, Simulation, WorkSpace,  initial_value_fun,
+                                       IndexedDataset, LossFunction, InitializedModel, SetNet,
                                       xi_fun, xi_fun_with_grad)
 
 cal = Calibration()
-
+torch.set_default_dtype(torch.float64)
 device = cal.device
 print(f"使用设备: {device}")
 
@@ -25,10 +25,9 @@ sml = Simulation()
 sml.initial_sample()
 sml.set_exo_shocks()
 # 初始化模型并将其移动到GPU
-encoder_deepset = DeepSetsEncoder()
-encoder_attention = AttentionSetEncoder()
 
-res_net = ValueNet(encoder_deepset).to(device)
+
+res_net = SetNet().to(device)
 model =  InitializedModel(res_net, initial_value_fun)
 ws  = WorkSpace(model)
 

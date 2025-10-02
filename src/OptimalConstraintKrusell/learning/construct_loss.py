@@ -16,13 +16,20 @@ class LossFunction(nn.Module):
         ws.a_path[:ws.sample_size, 0] = a
         ws.g_path[:ws.sample_size, :, 0] = g
 
+        # ws.a[:ws.sample_size] = a
+        # ws.g[:ws.sample_size,:] = g
+
+        # ws.xi[:ws.sample_size] = xi_fun(ws.model, sml.z_path[index, -1], a, g, sml.A_path[index, -1])
+
         for ti in range(ws.Nt-1):
             ws.z[:ws.sample_size] = sml.z_path[index, ti]
             ws.A[:ws.sample_size] = sml.A_path[index, ti]
             ws.dWj[:ws.sample_size] = sml.dWj_path[index, ti]
             ws.dWk[:ws.sample_size] = sml.dWk_path[index, ti]
-
             ws.simulate_one_step(ti, xi_fun)
+            # xi_est = xi_fun_with_grad(ws.model, sml.z_path[index, ti], ws.a[:ws.sample_size],
+            #                           ws.g[:ws.sample_size, :], sml.A_path[index, ti])
+            # loss_sum = loss_sum + criterion(ws.xi[:ws.sample_size], xi_est)
 
         ws.xi[:ws.sample_size] = xi_fun(ws.model, sml.z_path[index, -1], ws.a_path[:ws.sample_size, -1],
                        ws.g_path[:ws.sample_size,:,-1], sml.A_path[index, -1])
