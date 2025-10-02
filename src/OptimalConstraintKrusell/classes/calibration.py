@@ -1,12 +1,13 @@
 import numpy as np
 from math import sqrt
+import torch
 class Calibration:
     gamma = 2
     alpha = 0.36
-    delta = 0.08
+    delta = 0.08 / 4
     delta_diff = 0.1
     deathrate = 0.005
-    rho = 0.04
+    rho = 0.01
     theta = 1-0.6
     hat_z = 1.038
     eta = 1-0.6
@@ -16,22 +17,45 @@ class Calibration:
     dt = 1
     T = 50
     Nt = int(T/dt)
-    Nj = 80
-    Nk = 50
+    Nj = 100 #num of agents to approximate distribution
+    Ns = 1000 #num of samples
 
     z0_low = 0.2
     z0_high = 1.8
     a0_low = 0
-    a0_high = 100
+    a0_high = 1000
     A0_low = 0.2
     A0_high = 1.8
+    KYratio_low = 7.0
+    KYratio_high = 15.0
+    L = 1
 
+    is_competitive = True
+
+    seed_numpy = 42
+    seed_torch = 42
+
+    device_str = "cuda"
+
+    device = torch.device(device_str)
     # parameters on net work
     num_agents = Nj
     num_inputs = num_agents + 3
     num_layers = 2
     num_neurons = 512
     num_outputs = 1
-    num_epochs = 1000
+    num_epochs = 100
     learning_rate = 1e-3
     batch_size = 128
+
+def initial_value_fun(z, a, g, A):
+    Nj = 40
+    alpha = 0.36
+    gamma = 2
+    rho = 0.04
+    L = 1
+    K = g.sum(dim=1) / Nj
+    Y = A * K ** alpha * L ** (1-alpha)
+    r = alpha * Y / K
+    w = (1-alpha) * Y / L
+    return (w * z + r * a) ** (1-gamma) / (1-gamma) / rho

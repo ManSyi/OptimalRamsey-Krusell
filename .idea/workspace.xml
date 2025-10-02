@@ -5,10 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="正向模拟BSDE">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/calibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/calibration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/simulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/simulation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/workspace.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/workspace.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/construct_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/construct_loss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/train_network.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/train_network.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +42,7 @@
   </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/ManSyi/OptimalRamsey-Krusell&quot;,
+    &quot;url&quot;: &quot;https://github.com/ManSyi/OptimalRamsey-Krusell.git&quot;,
     &quot;accountId&quot;: &quot;36479165-e402-443d-aa0e-9c1cc8645f39&quot;
   }
 }</component>
@@ -55,10 +61,10 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python.Simulation.executor": "Debug",
-    "Python.construct_loss.executor": "Debug",
+    "Python.construct_loss.executor": "Run",
     "Python.finite_difference.executor": "Debug",
     "Python.simulation.executor": "Run",
-    "Python.test.executor": "Debug",
+    "Python.test.executor": "Run",
     "Python.test2.executor": "Run",
     "Python.train_network.executor": "Debug",
     "Python.workspace.executor": "Debug",
