@@ -102,6 +102,16 @@ class WorkSpace(Calibration):
         self.varsigma = - self.xi_A * self.sigma
 
 
+    def simulate_invariant_dist_one_step(self, xi_fun):
+        """
+
+        simulate individual state to get invariant distribution, given value function
+        approximated by neural net work
+
+        """
+        return
+
+
     def simulate_one_step(self, ti, xi_fun):
 
 

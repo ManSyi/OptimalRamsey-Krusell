@@ -14,11 +14,11 @@ class Calibration:
     hat_A = 1.038
     sigma = sqrt(0.2 ** 2 * (1 - (1-theta) ** 2))
     sigma_z = sqrt(0.2 ** 2 * (1 - (1-eta) ** 2))
-    dt = 1
-    T = 50
-    Nt = int(T/dt)
-    Nj = 100 #num of agents to approximate distribution
-    Ns = 1000 #num of samples
+    dt = 0.01
+    Nt = 50
+    T = Nt * dt
+    Nj = 50 #num of agents to approximate distribution
+    Ns = 10000 #num of samples
 
     z0_low = 0.2
     z0_high = 1.8
@@ -30,12 +30,12 @@ class Calibration:
     KYratio_high = 15.0
     L = 1
 
-    is_competitive = True
+    is_competitive = False
 
     seed_numpy = 42
     seed_torch = 42
 
-    device_str = "cuda"
+    device_str = "cpu"
 
     device = torch.device(device_str)
     # parameters on net work
@@ -46,7 +46,7 @@ class Calibration:
     num_outputs = 1
     num_epochs = 100
     learning_rate = 1e-3
-    batch_size = 128
+    batch_size = 512
 
 def initial_value_fun(z, a, g, A):
     Nj = 40
