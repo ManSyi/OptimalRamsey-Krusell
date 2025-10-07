@@ -15,10 +15,10 @@ class Calibration:
     sigma = sqrt(0.2 ** 2 * (1 - (1-theta) ** 2))
     sigma_z = sqrt(0.2 ** 2 * (1 - (1-eta) ** 2))
     dt = 0.01
-    Nt = 50
+    Nt = 2000
     T = Nt * dt
     Nj = 50 #num of agents to approximate distribution
-    Ns = 10000 #num of samples
+    Ns = 1000 #num of samples
 
     z0_low = 0.2
     z0_high = 1.8
@@ -35,7 +35,7 @@ class Calibration:
     seed_numpy = 42
     seed_torch = 42
 
-    device_str = "cpu"
+    device_str = "cuda"
 
     device = torch.device(device_str)
     # parameters on net work
@@ -58,4 +58,4 @@ def initial_value_fun(z, a, g, A):
     Y = A * K ** alpha * L ** (1-alpha)
     r = alpha * Y / K
     w = (1-alpha) * Y / L
-    return (w * z + r * a) ** (1-gamma) / (1-gamma) / rho
+    return (w * z + r * a) ** (-gamma) / rho

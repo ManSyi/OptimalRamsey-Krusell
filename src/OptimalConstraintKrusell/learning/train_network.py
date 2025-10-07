@@ -1,203 +1,124 @@
 """
-sets_model.py
 
 PyTorch implementation of a permutation-invariant approximator y = V(z, a, g, A).
 
-Components:
- - ElementEncoder: encodes each element of g
- - ScalarEncoder: encodes scalar inputs z, a, A
- - DeepSetPooling: sum/mean pooling after phi (Deep Sets)
- - AttentionPooling: learned query + scaled dot-product attention pooling
- - SixLayerPredictor: the final 6-layer MLP (ReLU hidden, identity final)
- - SetNet: composes encoders, pooling, and predictor; selectable pooling type
- - Example synthetic dataset + training loop
 """
 
-import math
-import random
-from typing import Literal, Optional
 
+
+# deep_set_pytorch.py
 import torch
-from torch import nn
-from torch.utils.data import DataLoader, Dataset
+import torch.nn as nn
+from torch.utils.data import Dataset, DataLoader, TensorDataset
+import torch.optim as optim
+import numpy as np
+import random
+from typing import Callable
 
-# ---------------------------
-# Utility / Small MLP module
-# ---------------------------
-class MLP(nn.Module):
-    """Small configurable MLP.
-    Uses ReLU for hidden activations and identity at the end (no activation).
+# ------------------------
+# Utilities
+# ------------------------
+def make_mlp(input_dim: int,
+             hidden_dim: int,
+             output_dim: int,
+             n_hidden_layers: int,
+             hidden_activation: Callable[..., nn.Module] = nn.ReLU,
+             final_activation: Callable[..., nn.Module] = nn.Softplus) -> nn.Sequential:
     """
-    def __init__(self, in_dim: int, hidden_dims: list[int], activate_final: bool = False):
-        super().__init__()
-        layers = []
-        dims = [in_dim] + hidden_dims
-        for i in range(len(hidden_dims)):
-            layers.append(nn.Linear(dims[i], dims[i + 1]))
-            # final activation optionally excluded by caller
-            if i < len(hidden_dims) - 1 or activate_final:
-                layers.append(nn.ReLU())
-        self.net = nn.Sequential(*layers)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.net(x)
-
-
-# -----------------------------------
-# Encoders for scalars and set elems
-# -----------------------------------
-class ElementEncoder(nn.Module):
-    """Encodes each scalar element of g into a d-dim vector."""
-    def __init__(self, d: int):
-        super().__init__()
-        # two-layer encoder: scalar -> hidden -> d
-        self.net = nn.Sequential(
-            nn.Linear(1, max(8, d)),
-            nn.ReLU(),
-            nn.Linear(max(8, d), d)
-        )
-
-    def forward(self, g: torch.Tensor) -> torch.Tensor:
-        # g: (batch, N) or (batch, N, 1)
-        if g.dim() == 2:
-            g = g.unsqueeze(-1)  # (B, N, 1)
-        B, N, _ = g.shape
-        g_flat = g.view(B * N, 1)
-        encoded = self.net(g_flat)            # (B*N, d)
-        encoded = encoded.view(B, N, -1)     # (B, N, d)
-        return encoded
-
-
-class ScalarEncoder(nn.Module):
-    """Encodes the scalars z, a, A into a single vector of dimension d."""
-    def __init__(self, d: int):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(3, max(8, d)),
-            nn.ReLU(),
-            nn.Linear(max(8, d), d)
-        )
-
-    def forward(self, z: torch.Tensor, a: torch.Tensor, A: torch.Tensor) -> torch.Tensor:
-        # z,a,A: (batch,) or (batch,1)
-        x = torch.stack([z.squeeze(-1), a.squeeze(-1), A.squeeze(-1)], dim=-1)  # (B,3)
-        return self.net(x)  # (B,d)
-
-
-# -----------------------------------
-# Pooling modules (permutation invariant)
-# -----------------------------------
-class DeepSetPooling(nn.Module):
-    """DeepSets pooling: apply phi (elementwise encoder) then sum/mean over set dimension."""
-    def __init__(self, reduction: Literal["sum", "mean"] = "sum"):
-        super().__init__()
-        if reduction not in {"sum", "mean"}:
-            raise ValueError("reduction must be 'sum' or 'mean'")
-        self.reduction = reduction
-
-    def forward(self, encoded_elems: torch.Tensor) -> torch.Tensor:
-        # encoded_elems: (B, N, d)
-        if self.reduction == "sum":
-            return encoded_elems.sum(dim=1)   # (B, d)
-        else:
-            return encoded_elems.mean(dim=1)  # (B, d)
-
-
-class AttentionPooling(nn.Module):
-    """Attention pooling: learnable query vector Q (1 x d) attends to set elements (scaled dot-product).
-    Produces a single pooled vector per batch element. Permutation invariant.
+    Create an MLP with:
+      - n_hidden_layers hidden layers (each: Linear -> hidden_activation)
+      - final linear layer -> final_activation
+    If n_hidden_layers == 0, it is simply Linear(input_dim -> output_dim) + final_activation.
     """
-    def __init__(self, d_model: int, temperature: Optional[float] = None):
-        super().__init__()
-        self.query = nn.Parameter(torch.randn(1, d_model))  # (1,d)
-        # small projection for keys/values — optional but often helpful
-        self.key = nn.Linear(d_model, d_model, bias=False)
-        self.value = nn.Linear(d_model, d_model, bias=False)
-        self.temperature = temperature or math.sqrt(d_model)
+    layers = []
+    if n_hidden_layers <= 0:
+        layers.append(nn.Linear(input_dim, output_dim))
+        layers.append(final_activation())
+    else:
+        # first hidden
+        layers.append(nn.Linear(input_dim, hidden_dim))
+        layers.append(hidden_activation())
+        # additional hidden layers
+        for _ in range(n_hidden_layers - 1):
+            layers.append(nn.Linear(hidden_dim, hidden_dim))
+            layers.append(hidden_activation())
+        # final linear
+        layers.append(nn.Linear(hidden_dim, output_dim))
+        layers.append(final_activation())
+    return nn.Sequential(*layers)
 
-    def forward(self, encoded_elems: torch.Tensor) -> torch.Tensor:
-        # encoded_elems: (B, N, d)
-        B, N, d = encoded_elems.shape
-        K = self.key(encoded_elems)    # (B,N,d)
-        V = self.value(encoded_elems)  # (B,N,d)
-        q = self.query.unsqueeze(0).expand(B, -1, -1)  # (B,1,d)
-        # compute scaled dot-product: (B,1,N)
-        scores = torch.matmul(q, K.transpose(-2, -1)) / self.temperature
-        attn = torch.softmax(scores, dim=-1)  # (B,1,N)
-        pooled = torch.matmul(attn, V).squeeze(1)  # (B,d)
-        return pooled
-
-
-# -----------------------------------
-# Predictor: six-layer MLP
-# -----------------------------------
-class SixLayerPredictor(nn.Module):
-    """Six linear layers in sequence. ReLU for hidden; identity at final layer."""
-    def __init__(self, in_dim: int, hidden_dims: list[int], out_dim: int = 1):
-        """
-        hidden_dims should be length 5 (so total linear layers = 6 including final).
-        Example: hidden_dims = [128, 128, 64, 64, 32] -> linear layers:
-                 in_dim->128, 128->128, 128->64, 64->64, 64->32, 32->out_dim (six linears)
-        """
-        super().__init__()
-        if len(hidden_dims) != 5:
-            raise ValueError("hidden_dims length must be 5 to form exactly 6 Linear layers total.")
-        layers = []
-        dims = [in_dim] + hidden_dims + [out_dim]
-        for i in range(len(dims) - 1):
-            layers.append(nn.Linear(dims[i], dims[i + 1]))
-            # Add ReLU for all but the final layer
-            if i < len(dims) - 2:
-                layers.append(nn.ReLU())
-        self.net = nn.Sequential(*layers)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.net(x).squeeze(-1)  # (B,) for scalar output
-
-
-# -----------------------------------
-# High-level model that composes pieces
-# -----------------------------------
-class SetNet(nn.Module):
-    """Composed model: encodes scalars and set, pools, concatenates and predicts."""
+# ------------------------
+# DeepSet model
+# ------------------------
+class DeepSet(nn.Module):
+    """
+    DeepSet architecture:
+      - phi: shared network applied to each element of g (element-wise)
+      - aggregation: sum over element embeddings
+      - rho: network that takes [aggregated_phi, z, a, A] and outputs scalar y
+    """
     def __init__(self,
-                 d_model: int = 64,
-                 pooling: Literal["deepset_sum", "deepset_mean", "attention"] = "deepset_sum",
-                 predictor_hidden_dims: Optional[list[int]] = None):
+                 g_dim: int,
+                 phi_hidden_dim: int,
+                 phi_out_dim: int,
+                 rho_hidden_dim: int,
+                 n_phi_layers: int,
+                 n_rho_layers: int):
+        """
+        g_dim: dimension of each element of g (usually 1 if g is real-valued vector)
+        phi_out_dim: embedding size for each element after phi
+        """
         super().__init__()
-        self.element_encoder = ElementEncoder(d=d_model)
-        self.scalar_encoder = ScalarEncoder(d=d_model)
+        # phi processes each scalar element of g independently (so input dim = g_dim)
+        self.phi = make_mlp(input_dim=g_dim,
+                            hidden_dim=phi_hidden_dim,
+                            output_dim=phi_out_dim,
+                            n_hidden_layers=n_phi_layers,
+                            hidden_activation=nn.ReLU,
+                            final_activation=nn.Softplus)
 
-        if pooling.startswith("deepset"):
-            reduction = "mean" if pooling.endswith("mean") else "sum"
-            self.pool = DeepSetPooling(reduction=reduction)
-        elif pooling == "attention":
-            self.pool = AttentionPooling(d_model=d_model)
+        # rho takes aggregated phi (phi_out_dim) plus (z,a,A) -> concatenate -> map to scalar
+        rho_input_dim = phi_out_dim + 3  # z, a, A
+        self.rho = make_mlp(input_dim=rho_input_dim,
+                            hidden_dim=rho_hidden_dim,
+                            output_dim=1,
+                            n_hidden_layers=n_rho_layers,
+                            hidden_activation=nn.ReLU,
+                            final_activation=nn.Softplus)
+
+    def forward(self, z: torch.Tensor, a: torch.Tensor, g: torch.Tensor, A: torch.Tensor):
+        """
+        Inputs:
+          z: (batch,)
+          a: (batch,)
+          g: (batch, N, g_dim)
+          A: (batch,)
+        Output:
+          y: (batch, 1)
+        """
+        # shape bookkeeping
+        batch_size = g.shape[0]
+        N = g.shape[1]
+        if len(g.shape) == 2:
+            g_dim = 1
         else:
-            raise ValueError("pooling must be one of 'deepset_sum', 'deepset_mean', 'attention'")
+            g_dim = g.shape[2]
 
-        if predictor_hidden_dims is None:
-            predictor_hidden_dims = [128, 128, 64, 32, 16]  # length 5 -> total 6 linear layers
-        if len(predictor_hidden_dims) != 5:
-            raise ValueError("predictor_hidden_dims length must be 5")
 
-        # input to predictor is scalar-encoding (d) concatenated with pooled set (d) => 2d
-        self.predictor = SixLayerPredictor(in_dim=2 * d_model,
-                                           hidden_dims=predictor_hidden_dims,
-                                           out_dim=1)
+        # Flatten elements to process with phi: (batch*N, g_dim)
+        g_flat = g.reshape(batch_size * N, g_dim)
+        phi_out = self.phi(g_flat)                          # (batch*N, phi_out_dim)
+        phi_out = phi_out.view(batch_size, N, -1)           # (batch, N, phi_out_dim)
 
-    def forward(self, z: torch.Tensor, a: torch.Tensor, g: torch.Tensor, A: torch.Tensor) -> torch.Tensor:
-        """
-        z,a,A: (B,) or (B,1)
-        g: (B,N)
-        returns: (B,) predicted y
-        """
-        z_enc = self.scalar_encoder(z, a, A)   # (B, d)
-        g_enc = self.element_encoder(g)        # (B, N, d)
-        pooled = self.pool(g_enc)              # (B, d)
-        feat = torch.cat([z_enc, pooled], dim=-1)  # (B, 2d)
-        y_hat = self.predictor(feat)           # (B,)
-        return y_hat
+        # aggregate (sum) over N to ensure permutation invariance
+        agg = phi_out.sum(dim=1)                            # (batch, phi_out_dim)
+
+        # concatenate scalars (z,a,A) after unsqueezing and then rho
+        scalars = torch.stack([z, a, A], dim=1)            # (batch, 3)
+        rho_in = torch.cat([agg, scalars], dim=1)          # (batch, phi_out_dim + 3)
+
+        y = self.rho(rho_in).squeeze(-1)                      # (batch, 1) due to rho output dim = 1
+        return y
 
 
 # Wrapper that outputs f0 + residual

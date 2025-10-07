@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from OptimalConstraintKrusell import (Calibration, Simulation, WorkSpace,  initial_value_fun,
-                                       IndexedDataset, LossFunction, InitializedModel, SetNet,
+                                       IndexedDataset, LossFunction, InitializedModel, DeepSet,
                                       xi_fun, xi_fun_with_grad)
 
 cal = Calibration()
@@ -26,8 +26,19 @@ sml.initial_sample()
 sml.set_exo_shocks()
 # 初始化模型并将其移动到GPU
 
+n_phi_layers = 2  # number of hidden layers in phi (set by main)
+n_rho_layers = 4  # number of hidden layers in rho (set by main)
+phi_hidden_dim = 64
+phi_out_dim = 32
+rho_hidden_dim = 128
 
-res_net = SetNet().to(device)
+res_net = DeepSet(g_dim=1,
+                    phi_hidden_dim=phi_hidden_dim,
+                    phi_out_dim=phi_out_dim,
+                    rho_hidden_dim=rho_hidden_dim,
+                    n_phi_layers=n_phi_layers,
+                    n_rho_layers=n_rho_layers).to(device)
+
 model =  InitializedModel(res_net, initial_value_fun)
 ws  = WorkSpace(model)
 
@@ -79,7 +90,7 @@ for epoch in range(num_epochs):
     current_sample = 0
     for batch, (z,a,g,A,index) in enumerate(train_loader):
         # 前向传播
-        loss = loss_fun(xi_fun, criterion, xi_fun_with_grad, index, a, g, ws, sml)
+        loss = loss_fun(xi_fun, criterion, xi_fun_with_grad, index, z, a, g,A, ws, sml)
 
         # 反向传播和优化
         optimizer.zero_grad()
