@@ -15,11 +15,12 @@ class Calibration:
     sigma = sqrt(0.2 ** 2 * (1 - (1-theta) ** 2))
     sigma_z = sqrt(0.2 ** 2 * (1 - (1-eta) ** 2))
     dt = 0.01
-    Nt = 2000
+    Nt = 2
+    Nt_xi = 20
     T = Nt * dt
     Nj = 50 #num of agents to approximate distribution
     Ns = 1000 #num of samples
-
+    loss_min = 1e-6
     z0_low = 0.2
     z0_high = 1.8
     a0_low = 0.01
@@ -30,7 +31,7 @@ class Calibration:
     KYratio_high = 15.0
     L = 1
 
-    is_competitive = False
+    is_competitive = True
 
     seed_numpy = 42
     seed_torch = 42
@@ -45,10 +46,10 @@ class Calibration:
     num_neurons = 512
     num_outputs = 1
     num_epochs = 100
-    learning_rate = 1e-3
+    learning_rate = 1e-4
     batch_size = 512
 
-def initial_value_fun(z, a, g, A):
+def initial_value_fun( z, a, g, A):
     Nj = 40
     alpha = 0.36
     gamma = 2
@@ -58,4 +59,4 @@ def initial_value_fun(z, a, g, A):
     Y = A * K ** alpha * L ** (1-alpha)
     r = alpha * Y / K
     w = (1-alpha) * Y / L
-    return (w * z + r * a) ** (-gamma) / rho
+    return (w * z + r * a) ** (1-gamma) / (1-gamma) / rho

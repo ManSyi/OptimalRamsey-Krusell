@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="permutation invariant">
+    <list default="true" id="7a928c89-a64f-46bf-aa1d-2717dc2fc6f1" name="更改" comment="Simulate stationary dist and Euler">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/calibration.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/calibration.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/simulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/simulation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/workspace.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/workspace.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/construct_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OptimalConstraintKrusell/learning/construct_loss.py" afterDir="false" />
@@ -149,7 +150,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759420799678</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Simulate stationary dist and Euler">
+      <option name="closed" value="true" />
+      <created>1759828399640</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1759828399640</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -170,10 +179,18 @@
     <MESSAGE value="正向模拟BSDE" />
     <MESSAGE value="first commit" />
     <MESSAGE value="permutation invariant" />
-    <option name="LAST_COMMIT_MESSAGE" value="permutation invariant" />
+    <MESSAGE value="Simulate stationary dist and Euler" />
+    <option name="LAST_COMMIT_MESSAGE" value="Simulate stationary dist and Euler" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/OptimalConstraintKrusell/classes/workspace.py</url>
+          <line>128</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">

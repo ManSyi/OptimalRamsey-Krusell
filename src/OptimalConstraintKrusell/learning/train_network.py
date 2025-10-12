@@ -9,11 +9,13 @@ PyTorch implementation of a permutation-invariant approximator y = V(z, a, g, A)
 # deep_set_pytorch.py
 import torch
 import torch.nn as nn
+from sympy import Identity
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 import torch.optim as optim
 import numpy as np
 import random
 from typing import Callable
+import math
 
 # ------------------------
 # Utilities
@@ -77,7 +79,7 @@ class DeepSet(nn.Module):
                             hidden_activation=nn.ReLU,
                             final_activation=nn.Softplus)
 
-        # rho takes aggregated phi (phi_out_dim) plus (z,a,A) -> concatenate -> map to scalar
+        # rho takes aggregated phi (phi_out_dim) plus (z,a,A) -> concatenate -> map to scalar nn.Identity
         rho_input_dim = phi_out_dim + 3  # z, a, A
         self.rho = make_mlp(input_dim=rho_input_dim,
                             hidden_dim=rho_hidden_dim,
@@ -114,10 +116,17 @@ class DeepSet(nn.Module):
         agg = phi_out.sum(dim=1)                            # (batch, phi_out_dim)
 
         # concatenate scalars (z,a,A) after unsqueezing and then rho
-        scalars = torch.stack([z, a, A], dim=1)            # (batch, 3)
-        rho_in = torch.cat([agg, scalars], dim=1)          # (batch, phi_out_dim + 3)
-
-        y = self.rho(rho_in).squeeze(-1)                      # (batch, 1) due to rho output dim = 1
+        if len(a.shape) == 1:
+            scalars = torch.stack([z, a, A], dim=1)  # (batch, 3)
+            rho_in = torch.cat([agg, scalars], dim=1)
+            # (batch, phi_out_dim + 3)
+            y = self.rho(rho_in).squeeze(-1)
+        elif len(a.shape) == 2:
+            cols = a.shape[1]
+            scalars = torch.stack([z.repeat(cols), a.T.flatten(), A.repeat(cols)], dim=1)  # (batch, 3)
+            rho_in = torch.cat([agg.repeat(cols,1), scalars], dim=1)
+                             # (batch, 1) due to rho output dim = 1
+            y = reshape_fortran(self.rho(rho_in), (batch_size,cols))
         return y
 
 
@@ -150,7 +159,7 @@ class InitializedModel(nn.Module):
     def forward(self, z, a, g, A):
         f0_val = self.f0(z, a, g, A)          # shape (batch,)
         res = self.residual(z, a, g, A)       # shape (batch,) -> initially zero
-        return f0_val + res
+        return (f0_val + res).squeeze(-1)
 
 # -------------------------
 # Utility: permute each sample's set independently
@@ -190,3 +199,26 @@ def xi_fun(model, z,a,g,A):
 
 def xi_fun_with_grad(model, z,a,g,A):
     return model(z,a,g,A)
+
+def reshape_fortran(x, shape):
+    if len(x.shape) > 0:
+        x = x.permute(*reversed(range(len(x.shape))))
+    return x.reshape(*reversed(shape)).permute(*reversed(range(len(shape))))
+
+def adjust_learning_rate(optimizer, epoch, err1, err2, lr_old):
+    lr = lr_old
+    if abs(err1-err2) / err1 < 0.5 and err1 > err2:
+        lr = lr_old / 10
+        print(f"New learning rate = {lr}\n")
+        for param_group in optimizer.param_groups:
+            param_group['lr'] = lr
+    return lr
+    # if epoch % 15 == 0:
+    #     lr = lr_old * (0.1 ** (epoch // 15))
+    #     for param_group in optimizer.param_groups:
+    #         param_group['lr'] = lr
+    # else:
+    #     lr = lr_old
+    # return lr
+
+

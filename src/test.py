@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import os
 from OptimalConstraintKrusell import (Calibration, Simulation, WorkSpace,  initial_value_fun,
                                        IndexedDataset, LossFunction, InitializedModel, DeepSet,
-                                      xi_fun, xi_fun_with_grad)
+                                      xi_fun, xi_fun_with_grad, adjust_learning_rate)
 
 cal = Calibration()
 torch.set_default_dtype(torch.float64)
@@ -24,6 +24,7 @@ torch.cuda.manual_seed(cal.seed_torch)
 sml = Simulation()
 sml.initial_sample()
 sml.set_exo_shocks()
+sml.initial_value_fun()
 # 初始化模型并将其移动到GPU
 
 n_phi_layers = 2  # number of hidden layers in phi (set by main)
@@ -39,7 +40,8 @@ res_net = DeepSet(g_dim=1,
                     n_phi_layers=n_phi_layers,
                     n_rho_layers=n_rho_layers).to(device)
 
-model =  InitializedModel(res_net, initial_value_fun)
+# model =  InitializedModel(res_net, initial_value_fun)
+model = res_net
 ws  = WorkSpace(model)
 
 
@@ -72,7 +74,8 @@ train_loader = DataLoader(IndexedDataset(train_dataset), batch_size=batch_size, 
 # test_loader = DataLoader(IndexedDataset(test_dataset), batch_size=batch_size, shuffle=False, generator=torch.Generator(device=cal.device_str))
 
 # 3. 定义损失函数和优化器
-optimizer = optim.Adam(model.parameters(), lr=cal.learning_rate)  # Adam优化器
+lr = cal.learning_rate
+optimizer = optim.Adam(model.parameters(), lr=lr)  # Adam优化器
 
 # 4. 训练模型
 num_epochs = cal.num_epochs
@@ -82,7 +85,8 @@ train_losses = []
 criterion = nn.MSELoss()
 loss_fun = LossFunction()
 train_batch_num = len(train_loader)
-
+np.savetxt("xi_fun_start", xi_fun(model, z, a,g,A).cpu().numpy(), delimiter=",")
+epoch_update_learn = 5
 for epoch in range(num_epochs):
     # 训练阶段
     model.train()
@@ -102,10 +106,15 @@ for epoch in range(num_epochs):
         current_sample += z.size(0)
         if batch == 0 or batch == train_batch_num - 1:
             loss = loss.item()
-            print(f"Batch: {batch:>3d}  loss: {loss:>12.2f}  [{current_sample:>5d}/{cal.Ns:>5d}]")
+            print(f"Batch: {batch:>3d}  loss: {loss:>12.7f}  [{current_sample:>5d}/{cal.Ns:>5d}]")
+
 
     avg_train_loss = total_train_loss / train_batch_num
     train_losses.append(avg_train_loss)
+
+    # if avg_train_loss < cal.loss_min:
+    #     break
+
 
     # 测试阶段
     # model.eval()
@@ -120,7 +129,14 @@ for epoch in range(num_epochs):
 
     # 每100个epoch打印一次损失
     if epoch % 1 == 0:
-        print(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {avg_train_loss:.4f}')
+        print(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {avg_train_loss:.7f}')
+    if (epoch + 1) % epoch_update_learn ==0:
+        lr = adjust_learning_rate(optimizer, epoch, train_losses[-epoch_update_learn], train_losses[-1], lr)
+    if avg_train_loss < cal.loss_min:
+        break
+
+
+np.savetxt("xi_fun_last", xi_fun(model, z, a,g,A).cpu().numpy(), delimiter=",")
 
 # 绘制结果
 plt.figure(figsize=(12, 5))

@@ -10,10 +10,12 @@ class Simulation(Calibration):
         self.A0 = torch.zeros(self.Ns)
         self.a0 = torch.zeros(self.Ns)
         self.g0 = torch.zeros((self.Ns,self.Nj))
+        self.xi0 = torch.zeros(self.Ns)
         self.z_path = torch.zeros((self.Ns, self.Nt))
         self.A_path = torch.zeros((self.Ns, self.Nt))
         self.dWj_path = torch.zeros((self.Ns, self.Nt - 1))
         self.dWk_path = torch.zeros((self.Ns, self.Nt - 1))
+
 
     def initial_sample(self):
         self.z0.uniform_(self.z0_low, self.z0_high)
@@ -49,6 +51,12 @@ class Simulation(Calibration):
                               torch.tensor(self.z0_low)),
                 torch.tensor(self.z0_high))
 
+    def initial_value_fun(self):
+        K = self.g0.sum(dim=1) / self.Nj
+        Y = self.A0 * K ** self.alpha * self.L ** (1 - self.alpha)
+        r = self.alpha * Y / K
+        w = (1 - self.alpha) * Y / self.L
+        self.xi0 = (w * self.z0 + r * self.a0) ** (1-self.gamma) / (1-self.gamma) / self.rho
 def lhs_uniform(N: int, J:int,
                 a_low: float,
                 a_high: float,
@@ -81,3 +89,4 @@ def lhs_uniform(N: int, J:int,
         samples[:, j] = a_low + pts * (a_high - a_low)
 
     return samples
+
