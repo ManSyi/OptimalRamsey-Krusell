@@ -113,7 +113,7 @@ class DeepSet(nn.Module):
         phi_out = phi_out.view(batch_size, N, -1)           # (batch, N, phi_out_dim)
 
         # aggregate (sum) over N to ensure permutation invariance
-        agg = phi_out.sum(dim=1)                            # (batch, phi_out_dim)
+        agg = 1/ N * phi_out.sum(dim=1)                            # (batch, phi_out_dim)
 
         # concatenate scalars (z,a,A) after unsqueezing and then rho
         if len(a.shape) == 1:
@@ -122,11 +122,13 @@ class DeepSet(nn.Module):
             # (batch, phi_out_dim + 3)
             y = self.rho(rho_in).squeeze(-1)
         elif len(a.shape) == 2:
+            if not len(a.shape) == len(z.shape):
+                raise ValueError('len(a.shape) and len(z.shape)) must be equal')
             cols = a.shape[1]
-            scalars = torch.stack([z.repeat(cols), a.T.flatten(), A.repeat(cols)], dim=1)  # (batch, 3)
-            rho_in = torch.cat([agg.repeat(cols,1), scalars], dim=1)
+            scalars = torch.stack([z.flatten(), a.flatten(), A.repeat_interleave(cols)], dim=1)  # (batch, 3)
+            rho_in = torch.cat([agg.repeat_interleave(cols,dim=0), scalars], dim=1)
                              # (batch, 1) due to rho output dim = 1
-            y = reshape_fortran(self.rho(rho_in), (batch_size,cols))
+            y = torch.reshape(self.rho(rho_in), (batch_size,cols))
         return y
 
 
@@ -213,12 +215,7 @@ def adjust_learning_rate(optimizer, epoch, err1, err2, lr_old):
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
     return lr
-    # if epoch % 15 == 0:
-    #     lr = lr_old * (0.1 ** (epoch // 15))
-    #     for param_group in optimizer.param_groups:
-    #         param_group['lr'] = lr
-    # else:
-    #     lr = lr_old
-    # return lr
+
+
 
 

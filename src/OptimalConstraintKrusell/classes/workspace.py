@@ -5,90 +5,45 @@ import torch
 import copy
 
 class WorkSpace(Calibration):
-    def __init__(self, model):
+    def __init__(self, model, size):
         super().__init__()
-        self.a = torch.zeros(self.batch_size)
-        self.g = torch.zeros((self.batch_size, self.Nj))
-        self.xi = torch.zeros(self.batch_size)
-        self.xi_a = torch.zeros(self.batch_size)
-        self.xi_z = torch.zeros(self.batch_size)
-        self.xi_A = torch.zeros(self.batch_size)
+        self.a = torch.zeros(size)
+        self.g = torch.zeros((size, self.Nj, 2))
+        self.ga = torch.zeros((size, self.Nj))
+        self.gz = torch.zeros((size, self.Nj))
+        self.z =  torch.zeros(size)
+        self.A = torch.zeros(size)
 
-        self.varsigma = torch.zeros(self.batch_size)
-        self.varsigma_z = torch.zeros(self.batch_size)
-
-        self.c =  torch.zeros(self.batch_size)
-        self.s_other = torch.zeros((self.batch_size, self.Nj))
-        self.xi_other = torch.zeros((self.batch_size, self.Nj))
-        self.xi_a_other = torch.zeros((self.batch_size, self.Nj))
-        self.s = torch.zeros(self.batch_size)
-        self.K = torch.zeros(self.batch_size)
-        self.Y = torch.zeros(self.batch_size)
-        self.r = torch.zeros(self.batch_size)
-        self.w = torch.zeros(self.batch_size)
-        self.r_k = torch.zeros(self.batch_size)
-        self.w_k = torch.zeros(self.batch_size)
-        self.Lambda = torch.zeros(self.batch_size)
-        self.dWj =  torch.zeros(self.batch_size)
-        self.dWk =  torch.zeros(self.batch_size)
-        self.z =  torch.zeros(self.batch_size)
-        self.A = torch.zeros(self.batch_size)
+        self.xi = torch.zeros(size)
+        self.Exi = torch.zeros(size)
+        self.Exi0 = torch.zeros(size)
+        self.Exi1 = torch.zeros(size)
 
 
-
-        self.a_path = torch.zeros((self.batch_size,self.Nt))
-        self.g_path = torch.zeros((self.batch_size, self.Nj, self.Nt))
-        
-        self.xi_infinitesimal_path = torch.zeros((self.batch_size, self.Nt - 1))
+        self.c =  torch.zeros(size)
+        self.ga_drift = torch.zeros((size, self.Nj))
+        self.gz_drift = torch.zeros((size, self.Nj))
+        self.xi_other = torch.zeros((size, self.Nj))
+        self.s = torch.zeros(size)
+        self.K = torch.zeros(size)
+        self.Y = torch.zeros(size)
+        self.r = torch.zeros(size)
+        self.w = torch.zeros(size)
+        self.r_k = torch.zeros(size)
+        self.w_k = torch.zeros(size)
+        self.Lambda = torch.zeros(size)
+        self.dWj =  torch.zeros(size)
+        self.dWj_other = torch.zeros((size, self.Nj))
+        self.dWk =  torch.zeros(size)
 
         self.model = model
-        self.sample_size = self.batch_size
-
-
-    def derivative_z_A(self, xi_fun):
-
-        # self.xi_z = torch.maximum((xi_fun(self.model, self.z + self.delta_diff, self.a, self.g, self.A)
-        #                          - xi_fun(self.model, self.z - self.delta_diff, self.a, self.g, self.A))
-        #                           / (self.delta_diff * 2), torch.tensor(1e-5))
-        #
-        # self.xi_A = torch.maximum((xi_fun(self.model, self.z, self.a, self.g, self.A + self.delta_diff)
-        #              - xi_fun(self.model, self.z, self.a, self.g, self.A - self.delta_diff))
-        #                           / (self.delta_diff * 2), torch.tensor(1e-5))
-
-        self.xi_z = ((xi_fun(self.model, self.z + self.delta_diff, self.a, self.g, self.A)
-                                 - xi_fun(self.model, self.z - self.delta_diff, self.a, self.g, self.A))
-                                  / (self.delta_diff * 2))
-        self.xi_A = ((xi_fun(self.model, self.z, self.a, self.g, self.A + self.delta_diff)
-                     - xi_fun(self.model, self.z, self.a, self.g, self.A - self.delta_diff))
-                                  / (self.delta_diff * 2))
-
-
-    def derivative_a(self, xi_fun):
-
-        # self.xi_a = torch.maximum(xi_fun(self.model, self.z, self.a + self.delta_diff, self.g, self.A)
-        #           - xi_fun(self.model, self.z, self.a - self.delta_diff, self.g, self.A)
-        #                          / (self.delta_diff * 2), torch.tensor(1e-5))
-        # self.c = self.consumption(self.xi_a)
-        # self.s = ((self.r + self.deathrate) * self.a + self.w * self.z
-        #           - self.c)
-        #
-        # self.xi_a_other = torch.maximum(xi_fun(self.model, self.z, self.g + self.delta_diff, self.g, self.A)
-        #           - xi_fun(self.model, self.z, self.g - self.delta_diff, self.g, self.A)
-        #                          / (self.delta_diff * 2), torch.tensor(1e-5))
-        # self.s_other = ((self.r.unsqueeze(1) + self.deathrate) * self.g + self.w.unsqueeze(1) * self.z.unsqueeze(1)
-        #                 - self.consumption(self.xi_a_other))
-
-        self.s = ((self.r + self.deathrate) * self.a + self.w * self.z
-                  - self.consumption(xi_fun(self.model, self.z, self.a, self.g, self.A)))
-        self.xi_other= xi_fun(self.model, self.z, self.g, self.g, self.A)
-        self.s_other = ((self.r.unsqueeze(1) + self.deathrate) * self.g + self.w.unsqueeze(1) * self.z.unsqueeze(1)
-                        - self.consumption(self.xi_other))
+        self.max_batch_size = self.batch_size
 
 
 
     def capital_labor(self):
-        self.K = 1 / self.Nj * torch.maximum(self.g.sum(1), torch.tensor(0.01))
-        self.L = 1.0
+        self.K = torch.minimum(torch.maximum(1 / self.Nj * self.g[:,:,1].sum(dim=1), torch.tensor(self.a0_low)), torch.tensor(self.a0_high))
+        self.L =  torch.minimum(torch.maximum(1 / self.Nj *self.g[:,:,0].sum(dim=1), torch.tensor(self.z0_low)), torch.tensor(self.z0_high))
 
     def shadow_price(self):
         if not self.is_competitive:
@@ -101,7 +56,14 @@ class WorkSpace(Calibration):
         self.r = self.alpha * self.Y / self.K - self.delta
         self.w = (1 - self.alpha) * self.Y / self.L
 
+    def saving(self, xi_fun):
+        self.s = ((self.r + self.deathrate) * self.a + self.w * self.z
+                  - self.consumption(xi_fun(self.model, self.z, self.a, self.g, self.A)))
 
+    def dist_drift(self, xi_fun):
+        self.xi_other= xi_fun(self.model, self.g[:,:,0], self.g[:,:,1], self.g, self.A)
+        self.ga_drift = ((self.r.unsqueeze(1) + self.deathrate) * self.g[:,:,1] + self.w.unsqueeze(1) * self.g[:,:,0]
+                         - self.consumption(self.xi_other))
 
     def consumption(self, xip):
         return xip ** (-1 / self.gamma)
@@ -109,12 +71,16 @@ class WorkSpace(Calibration):
     def utils(self, c):
         return torch.maximum(c, torch.tensor(0.001)) ** (1-self.gamma) / (1-self.gamma)
 
-    def risk_loadings(self):
-        self.varsigma_z = - self.xi_z * self.sigma_z
-        self.varsigma = - self.xi_A * self.sigma
+
+    def simulate_dist_one_step(self, xi_fun, dWj_other):
+        self.capital_labor()
+        self.prices()
+        self.dist_drift(xi_fun)
+        self.g[:, :, 0] = self.simulate_z_one_step(self.g[:, :, 0], dWj_other)
+        self.g[:, :, 1] = self.simulate_a_one_step(self.g[:, :, 1], self.ga_drift)
 
 
-    def simulate_invariant_dist_one_step(self, xi_fun):
+    def simulate_states_one_step(self, xi_fun, dWj, dWk, dWj_other):
         """
 
         simulate individual state to get invariant distribution, given value function
@@ -123,54 +89,33 @@ class WorkSpace(Calibration):
         """
         self.capital_labor()
         self.prices()
+        self.saving(xi_fun)
+        self.dist_drift(xi_fun)
 
-        self.s_other = ((self.r.unsqueeze(1) + self.deathrate) * self.g + self.w.unsqueeze(1) * self.z.unsqueeze(1)
-                              - self.consumption(xi_fun(self.model, self.z, self.g, self.g, self.A)))
-        self.g = torch.minimum(
-            torch.maximum(self.g + self.s_other * self.dt, torch.tensor(self.a0_low)),
+        self.z = self.simulate_z_one_step(self.z, dWj)
+        self.A = self.simulate_A_one_step(self.A, dWk)
+        self.a = self.simulate_a_one_step(self.a, self.s)
+        self.g[:, :,0] = self.simulate_z_one_step(self.g[:, :,0], dWj_other)
+        self.g[:, :,1] = self.simulate_a_one_step(self.g[:, :,1], self.ga_drift)
+
+
+
+
+
+    def simulate_a_one_step(self, a_cur, s_cur):
+        return torch.minimum(
+            torch.maximum(a_cur + s_cur * self.dt, torch.tensor(self.a0_low)),
             torch.tensor(self.a0_high))
 
 
 
-    def simulate_states_one_step(self, xi_fun):
-
-        self.capital_labor()
-        self.prices()
-        self.derivative_a(xi_fun)
-
-        self.a = torch.minimum(
-            torch.maximum(self.a + self.s * self.dt, torch.tensor(self.a0_low)),
-            torch.tensor(self.a0_high))
-        self.g = torch.minimum(
-            torch.maximum(self.g + self.s_other * self.dt, torch.tensor(self.a0_low)),
-            torch.tensor(self.a0_high))
-
-
-
-    def simulate_xi_one_step(self, xi_fun):
+    def simulate_Exi_one_step(self):
+        """
+        Simulate E(dVa)/dt by one step, given the initial values (z,a,g,A), r, Lambda
+        Returns: E(dVa)/dt
 
         """
-        Simulate xi and state variable by one step, given the initial values.
-        Returns: xi, a, g, in the next step
 
-        """
-        self.capital_labor()
-        self.prices()
-        self.derivative_a(xi_fun)
+        self.Exi = -(self.Lambda - (self.rho + self.deathrate - self.r) * self.xi)
 
-        self.shadow_price()
-        self.derivative_z_A(xi_fun)
-        self.risk_loadings()
 
-        # self.xi = ((1 + (self.rho + self.deathrate)  * self.dt) * self.xi - (self.utils(self.c) - self.Lambda * (self.K - self.a) )* self.dt
-        #               - self.varsigma_z * self.dWj - self.varsigma * self.dWk)
-
-        self.xi = torch.maximum((self.xi - (self.Lambda - (self.rho + self.deathrate -self.r) * self.xi)
-                   * self.dt - self.varsigma_z * self.dWj - self.varsigma * self.dWk), torch.tensor(1e-6))
-
-        self.a = torch.minimum(
-            torch.maximum(self.a + self.s * self.dt, torch.tensor(self.a0_low)),
-            torch.tensor(self.a0_high))
-        self.g = torch.minimum(
-            torch.maximum(self.g + self.s_other * self.dt, torch.tensor(self.a0_low)),
-            torch.tensor(self.a0_high))
